@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+ <!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zcjd.app_server.mapper.IOfficeFileMapper">
+	<!-- 查询文件 -->
+	<select id="getfilelist" parameterType="map" resultType="com.zcjd.app_server.model.officepublicfilePojo">
+		SELECT t.*,
+		(SELECT d.u_name FROM hr_user_info d WHERE d.id = t.create_id) as userName
+		FROM
+		sys_public_files t where
+		t.father_id=#{map.fatherid}
+	</select>
+<!-- 查询文件夹 -->
+	<select id="getfolderlist" parameterType="map" resultType="com.zcjd.app_server.model.officepublicfolderPojo">
+		SELECT t.*,
+		(SELECT d.u_name FROM hr_user_info d WHERE d.id = t.userid) as userName
+		FROM sys_public_folder t where 1=1
+		<if test="map.fatherid ==null">
+			and t.fatherid is null
+		</if>
+		<if test="map.fatherid !=null">
+			and t.fatherid=#{map.fatherid}
+		</if>
+	</select>
+	
+	<!-- 按条件 查询 公共文件柜 -->
+	<select id="getconditionfilelist" parameterType="map" resultType="com.zcjd.app_server.model.officepublicfilePojo">
+		SELECT t.*,
+		(SELECT d.u_name FROM hr_user_info d WHERE d.id = t.create_id) as userName
+		FROM
+		sys_public_files t where 1=1
+		<if test="map.fileName !=null and map.fileName !=''">
+			and t.file_name like concat("%",#{map.fileName},"%")
+		</if>
+		<if test="map.userName !=null and map.userName !=''">
+			and t.create_id in (select id from hr_user_info where u_name like concat('%',#{map.userName},'%'))
+		</if>
+	</select> 
+	
+<!-- 	<select id="getsharefilelist" parameterType="java.lang.Integer" resultType="com.zcjd.officefile.pojo.officefilePojo"> -->
+<!-- 		SELECT t.*, -->
+<!-- 		(select name from sys_user where id = t.userid) as userName -->
+<!-- 		FROM -->
+<!-- 		oa_files t WHERE t.state = #{state} -->
+<!-- 		order by -->
+<!-- 		t.userid -->
+<!-- 	</select> -->
+
+ <insert id="savefile" parameterType="com.zcjd.app_server.model.officepublicfilePojo">
+		INSERT INTO sys_public_files
+		(`id`, `file_name`, `father_id`, `file_type`, `file_path`, `file_size`, `file_count`, `start_time`, `end_time`, `create_id`, `create_time`, `del_state`, `allowdownload`,`realname`,file_suffix) 
+		VALUES (#{id}, #{file_name}, #{father_id}, #{file_type}, #{file_path}, #{file_size}, #{file_count}, #{start_time}, #{end_time}, #{create_id}, #{create_time}, #{del_state}, #{allowdownload},#{realname},#{file_suffix});
+</insert> 
+
+	<insert id="savefolder" parameterType="com.zcjd.app_server.model.officepublicfolderPojo" keyProperty="id">
+		INSERT INTO
+		sys_public_folder(id,name,folderpath,userid,fatherid)values(#{id},#{name},#{folderpath},#{userid},#{fatherid})
+	</insert> 
+
+<update id="updatefilepojo" parameterType="com.zcjd.app_server.model.officepublicfilePojo">
+		UPDATE sys_public_files
+		SET `id`=#{id}, `file_name`=#{file_name}, `father_id`=#{father_id}, `file_type`=#{file_type}, `file_path`=#{file_path}, `file_size`=#{file_size}, `file_count`=#{file_count}, `start_time`=#{start_time}, 
+		`end_time`=#{end_time}, `create_id`=#{create_id}, `create_time`=#{create_time}, `del_state`=#{del_state}, `allowdownload`=#{allowdownload}, `realname`=#{realname} ,file_suffix = #{file_suffix}
+		WHERE `id`=#{id}
+	</update> 
+
+<update id="updatefolderpojo" parameterType="com.zcjd.app_server.model.officepublicfolderPojo">
+		UPDATE
+		sys_public_folder SET id= #{id},name= #{name},folderpath=
+		#{folderpath},fatherid= #{fatherid},userid= #{userid} WHERE id= #{id}
+	</update> 
+
+ 	<delete id="deletefile" parameterType="java.lang.String">
+		DELETE FROM
+		sys_public_files WHERE id = #{id}
+	</delete> 
+
+	<delete id="deletefolder" parameterType="java.lang.String"> 
+		DELETE FROM
+		sys_public_folder WHERE id = #{id}
+	</delete> 
+
+	<select id="getfileById" parameterType="java.lang.String" resultType="com.zcjd.app_server.model.officepublicfilePojo">
+		SELECT t.* FROM
+		sys_public_files t WHERE t.id = #{id}
+	</select> 
+
+	<select id="getfolderById" parameterType="java.lang.String" resultType="com.zcjd.app_server.model.officepublicfolderPojo">
+		SELECT t.* FROM
+		sys_public_folder t WHERE t.id = #{id}
+	</select>
+
+	<!-- 根据userid 查找全部 公共文件夹 oa_folder -->
+<!-- 	<select id="getPublicFolderByAll" parameterType="map" resultType="com.zcjd.officefile.pojo.officefolderPojo"> -->
+<!-- 		select t.* from -->
+<!-- 		oa_folder t where -->
+<!-- 		t.userid=#{map.userid} -->
+<!-- 	</select> -->
+
+	<!-- 查找全部 公共文件夹 -->
+<!-- 	<select id="getPublicFolderAll" resultType="com.zcjd.officefile.pojo.officefolderPojo"> -->
+<!-- 		select t.* from -->
+<!-- 		oa_folder t where t.fatherid >=0 -->
+<!-- 	</select> -->
+
+<!-- 	<select id="getPublicFolderById" resultType="Integer"> -->
+<!-- 		select t.id from -->
+<!-- 		oa_folder t where ISNULL(t.fatherid) limit 0,1 -->
+<!-- 	</select> -->
+
+
+	<!-- *******************************改******************************************* -->
+	<!-- 获取所有的文件柜文件 -->
+ <select id="getAllFiles" resultType="com.zcjd.app_server.model.officepublicfilePojo">
+		SELECT *,
+		(SELECT d.u_name FROM hr_user_info d WHERE d.id = t.create_id) as userName
+		FROM
+		sys_public_files t
+	</select> 
+
+	<!-- 获取所有的文件柜文件夹列表 -->			   
+    <select id="getAllFolders" resultType="com.zcjd.app_server.model.officepublicfolderPojo">
+		SELECT t.*,
+		(SELECT d.u_name FROM hr_user_info d WHERE d.id = t.userid) as userName
+		FROM sys_public_folder t
+	</select>
+
+</mapper>  
+ 

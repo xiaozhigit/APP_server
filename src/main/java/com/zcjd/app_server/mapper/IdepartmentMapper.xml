@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+ <!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zcjd.app_server.mapper.IdepartmentMapper">
+	
+	<!-- 查询所需字段 -->
+	<sql id="selectDeptWithFiled" >
+		t.id,
+		t.pid,
+		t.d_name,	
+		t.remarks,
+		t.userId,
+		(SELECT u.u_name FROM hr_user_info u WHERE u.id = t.userId AND u.del_state = 0) userName,
+		t.tel,
+		t.del_state,
+		t.sort
+	</sql>
+	
+	<!-- 这个是查询部门treegrid分页数据 -->
+	<select id="findDeptByPage" parameterType="map" resultType="com.zcjd.app_server.model.DepartmentPojo">
+		select 
+			<include refid="selectDeptWithFiled"></include>
+		from 
+			sys_department t
+		<where>
+			t.del_state = 0
+				<if test="map.deptName !=null and map.deptName != ''">
+					AND t.d_name LIKE CONCAT('%', #{map.deptName}, '%')
+				</if>
+				<if test="map.deptUserName !=null and map.deptUserName != ''">
+					AND t.userId EXISTS (SELECT u.id FROM hr_user_info u WHERE u.u_name LIKE CONCAT('%', #{map.deptUserName}, '%')) 
+				</if>
+				<if test="map.pid !=null and map.pid != ''">
+				and t.pid = #{pid}
+				</if>
+				<if test="map.remarks !=null and map.remarks != ''">
+				and t.remarks = #{remarks}
+				</if>
+				<if test="map.userId !=null and map.userId != ''">
+				and t.userId = #{userId}
+				</if>
+				<if test="map.tel !=null and map.tel != ''">
+				and t.tel = #{tel}
+				</if>
+		</where>
+	</select>
+	
+	<!-- 添加部门信息 -->
+	<insert id="saveDeptMsg" parameterType="com.zcjd.app_server.model.DepartmentPojo">
+		insert into sys_department (
+			id,
+			pid,
+			d_name,	
+			remarks,
+			userId,
+			tel,
+			sort,
+			del_state
+		)
+		values(
+			#{id},
+			#{pid},
+			#{d_name},
+			#{remarks},
+			#{userId},
+			#{tel},
+			#{sort},
+			#{del_state}
+		)	
+	</insert>
+	
+	<!-- 修改部门信息 -->
+	<update id="updateDeptMsg" parameterType="com.zcjd.app_server.model.DepartmentPojo">
+		update 
+			sys_department 
+		set 
+			pid=#{pid},
+			d_name=#{d_name},
+			remarks=#{remarks},
+			userId=#{userId},
+			tel=#{tel},
+			sort=#{sort},
+			del_state=#{del_state}
+		where
+			id = #{id}
+	</update>
+	
+	
+	<!-- 删除部门信息 -->
+	<update id="deleteDeptMsg" parameterType="java.lang.String">
+		update 
+			sys_department 
+		set 
+			del_state=1
+		where
+			id = #{id}
+	</update>
+	
+	<!-- 根据id查询一条记录 -->
+	<select id="getDeptById" parameterType="java.lang.String" resultType="com.zcjd.app_server.model.DepartmentPojo" >
+		select 
+			<include refid="selectDeptWithFiled" ></include>
+		from 
+			sys_department t
+		where
+			t.del_state = 0
+		AND 
+			t.id = #{id}
+	</select>
+	
+	<!-- 查询所有部门 -->
+	<select id="findAllDept" resultType="com.zcjd.app_server.model.DepartmentPojo" >
+		select 
+			<include refid="selectDeptWithFiled" ></include>
+		from 
+			sys_department t
+		where
+			t.del_state = 0
+	</select>
+	
+	<!-- 根据筛选条件查询所有的部门 -->
+	<select id="findDeptByMap" parameterType="map" resultType="com.zcjd.app_server.model.DepartmentPojo" >
+		select 
+			<include refid="selectDeptWithFiled" ></include>
+		from 
+			sys_department t
+		<where>
+			t.del_state = 0
+			<!-- deptId==0是指查询全部 -->
+			<if test="map.deptId != '0' and map.deptId != 0">
+				AND t.id = #{map.deptId}
+			</if>
+		</where>	
+	</select>
+	
+</mapper>

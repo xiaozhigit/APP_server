@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+ <!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zcjd.app_server.mapper.ICoderuleMapper">
+	<!--分页查询 -->
+	<select id="getCoderuleByPage" parameterType="map"
+		resultType="com.zcjd.app_server.model.CoderulePojo">
+		SELECT t.*,(select d.dic_name from sys_dictionary d where d.id = t.codeId) codeName FROM sys_coderule t
+		<where>
+			t.delete_state = 0
+			<if test="map.name != null and map.name !=''">
+				and t.name like concat('%',#{map.name},'%')
+			</if>
+		</where>
+	</select>
+	<!--添加 -->
+	<insert id="saveCoderule" parameterType="com.zcjd.app_server.model.CoderulePojo">
+		INSERT INTO
+		sys_coderule(id,name,prefixValue,prefixSeparatorDate,dateStyle,dateSeparatorNumber,numberLength,firstNumber,numberSeparatorSuffix,suffixValue,status,codeunique,codeId,
+		delete_state)values(#{id},#{name},#{prefixValue},#{prefixSeparatorDate},#{dateStyle},#{dateSeparatorNumber},#{numberLength},#{firstNumber},#{numberSeparatorSuffix},#{suffixValue},#{status},#{codeunique},#{codeId},
+		#{delete_state})
+	</insert>
+	<!--更新 -->
+	<update id="updateCoderule" parameterType="com.zcjd.app_server.model.CoderulePojo">
+		UPDATE sys_coderule SET id= #{id},name= #{name},prefixValue=
+		#{prefixValue},prefixSeparatorDate= #{prefixSeparatorDate},dateStyle=
+		#{dateStyle},dateSeparatorNumber= #{dateSeparatorNumber},numberLength=
+		#{numberLength},firstNumber= #{firstNumber},numberSeparatorSuffix=
+		#{numberSeparatorSuffix},suffixValue= #{suffixValue},status=
+		#{status},codeunique= #{codeunique},codeId= #{codeId},
+		delete_state = #{delete_state} WHERE id= #{id}
+	</update>
+	<!--删除 -->
+	<delete id="deleteCoderule" parameterType="java.lang.String">
+		DELETE FROM sys_coderule WHERE id = #{id}
+	</delete>
+	<!--根据id查询 -->
+	<select id="getCoderuleById" parameterType="java.lang.String"
+		resultType="com.zcjd.app_server.model.CoderulePojo">
+		SELECT t.*,(select d.dic_name from sys_dictionary d where d.id = t.codeId) codeName FROM sys_coderule t WHERE t.id = #{id}
+	</select>
+	
+	<!-- 通过唯一标识codeunique="合同编码"查询合同的类型 -->
+	<select id="getAllContractTypeByCodeunique" parameterType="java.lang.String" resultType="com.zcjd.app_server.model.CoderulePojo">
+		SELECT t.* FROM sys_coderule t WHERE t.codeunique=#{codeunique} and delete_state = 0 
+	</select>
+	
+	<!-- 根据编码类型查询-->
+	<select id="getCodeRuleByTypeName" resultType="com.zcjd.app_server.model.CoderulePojo" >
+		SELECT c.* FROM sys_coderule c 
+		WHERE c.codeId = #{codeId} and c.delete_state  = 0
+	</select>
+	
+	<!-- 码表维护 -->
+	<!--添加 -->
+	<insert id="saveCoderuleNumber" parameterType="com.zcjd.app_server.model.CodeNumberPojo">
+		INSERT INTO
+		sys_code_rule_number(id,type,codeId,number,first_number,c_count)values(#{id},#{type},#{codeId},#{number},#{dateStyle},#{first_number},#{c_count})
+	</insert>
+	<!--更新 -->
+	<update id="updateCoderuleNumber" parameterType="com.zcjd.app_server.model.CodeNumberPojo">
+		UPDATE sys_code_rule_number SET id= #{id},type= #{type},codeId=
+		#{codeId},number= #{number},first_number=
+		#{first_number},c_count = #{c_count} WHERE id= #{id}
+	</update>
+	<!--删除 -->
+	<delete id="deleteCoderuleNumber" parameterType="java.lang.String">
+		DELETE FROM sys_code_rule_number WHERE id = #{id}
+	</delete>
+	<!-- 根据编码类型和生成的编码查询是否已存在-->
+	<select id="getCodeRuleByTypeNumber" resultType="com.zcjd.app_server.model.CodeNumberPojo" >
+		SELECT c.* FROM sys_code_rule_number c WHERE c.type = #{type} 
+	</select>
+	<!-- 根据规则ＩＤ查询最大的流水号-->
+	<select id="getCodeNumberMax" resultType="com.zcjd.app_server.model.CodeNumberPojo" >
+		SELECT  max(c.first_number) FROM sys_code_rule_number c WHERE c.codeId = #{codeId} and c.c_count = #{count}
+	</select>
+</mapper>  
+ 

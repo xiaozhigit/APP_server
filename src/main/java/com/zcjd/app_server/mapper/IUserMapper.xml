@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+ <!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zcjd.app_server.mapper.IUserMapper">
+	<!-- 查询用户信息 -->
+	<select id="findUserByPage" parameterType="map" resultType="com.zcjd.app_server.model.UserInfoPojo">
+		select
+			id,
+			u_name,
+			CASE when u.u_sex = '1' then '男'
+				 when u.u_sex = '0' then '女'
+				 end  u_sex,
+			u_birthday,
+			u_number,
+			CASE when u.u_married= '1' then '已婚'
+				 when u.u_married = '0' then '未婚'
+				 end  u_married,
+			(select dic_name from sys_dictionary where id=u_nation) as u_nation,
+			u_card,
+			u_nationality,
+			(select dic_name from sys_dictionary where id=u_identity) as u_identity,
+			u_birthplace,
+			u_address,
+			(select dic_name from sys_dictionary where id=u_education) as u_education,
+			u_gradu_time,
+			u_work_time,
+			deptId,
+			(select d_name from sys_department where id = deptId) as deptName,
+			(select dic_name from sys_dictionary where id=u_type) as u_type,
+			(select dic_name from sys_dictionary where id=u_level) as u_level,
+			(select dic_name from sys_dictionary where id=u_technical) as u_technical,
+			(select dic_name from sys_dictionary where id=u_job) as u_job,
+			u_entry_time,
+			u_regular_time,
+			u_tel,
+			u_phone,
+			u_email,
+			u_qq,
+			u_remarks,
+			create_id,
+			del_state,
+			create_time,
+			CASE when u.lz_state = '1' then '已离职'
+				 when u.lz_state = '0' then '未离职'
+				 end lz_state,
+			lz_time,
+			lz_type,
+			lz_remarks
+		from 
+			hr_user_info u
+		<where>
+			u.del_state = 0 AND u.u_num_type = 0
+			<if test="map.u_name!=null">
+				and u_name like '%${map.u_name}%'
+			</if>
+			<if test="map.deptId!=null">
+				and deptId=#{map.deptId}
+			</if>
+			<if test="map.u_sex!=null">
+				and u_sex=#{map.u_sex}
+			</if>
+			<if test="map.u_married!=null">
+				and u_married=#{map.u_married}
+			</if>
+			<if test="map.lz_state!=null">
+				and lz_state=#{map.lz_state}
+			</if>
+			<if test="map.u_type!=null">
+				and u_type=#{map.u_type}
+			</if>
+			<if test="map.u_entry_time!=null">
+				and u_entry_time=#{map.u_entry_time}
+			</if>
+			<if test="map.u_regular_time!=null">
+				and u_regular_time=#{map.u_regular_time}
+			</if>
+			<if test="map.u_level!=null">
+				and u_level=#{map.u_level}
+			</if>
+		</where>
+	</select>
+	<!--通过部门id查询用户信息 -->
+	<select id="findUserByDeptId" parameterType="java.lang.String" resultType="com.zcjd.app_server.model.UserInfoPojo">
+		select
+			id,
+			u_name,
+			CASE when u.u_sex = '1' then '男'
+				 when u.u_sex = '0' then '女'
+				 end  u_sex,
+			u_birthday,
+			u_number,
+			CASE when u.u_married= '1' then '已婚'
+				 when u.u_married = '0' then '未婚'
+				 end  u_married,
+			(select dic_name from sys_dictionary where id=u_nation) as u_nation,
+			u_card,
+			u_nationality,
+			(select dic_name from sys_dictionary where id=u_identity) as u_identity,
+			u_birthplace,
+			u_address,
+			(select dic_name from sys_dictionary where id=u_education) as u_education,
+			u_gradu_time,
+			u_work_time,
+			deptId,
+			(select d_name from sys_department where id = deptId) as deptName,
+			(select dic_name from sys_dictionary where id=u_type) as u_type,
+			(select dic_name from sys_dictionary where id=u_level) as u_level,
+			(select dic_name from sys_dictionary where id=u_technical) as u_technical,
+			(select dic_name from sys_dictionary where id=u_job) as u_job,
+			u_entry_time,
+			u_regular_time,
+			u_tel,
+			u_phone,
+			u_email,
+			u_qq,
+			u_remarks,
+			create_id,
+			del_state,
+			create_time,
+			CASE when u.lz_state = '1' then '已离职'
+				 when u.lz_state = '0' then '未离职'
+				 end lz_state,
+			lz_time,
+			lz_type,
+			lz_remarks
+		from 
+			hr_user_info u
+		<where>
+			u.del_state = 0 AND u.u_num_type = 0
+				and deptId=#{deptId}
+		</where>
+	</select>
+
+	<!-- 增加用户信息 -->
+	<insert id="saveUser"
+		parameterType="com.zcjd.app_server.model.UserInfoPojo">
+		INSERT INTO hr_user_info (
+		id,
+		u_name,
+		u_sex,
+		u_birthday,
+		u_number,
+		u_num_type,
+		u_married,
+		u_nation,
+		u_card,
+		u_nationality,
+		u_identity,
+		u_birthplace,
+		u_address,
+		u_education,
+		u_gradu_time,
+		u_work_time,
+		deptId,
+		u_type,
+		u_level,
+		u_technical,
+		u_job,
+		u_entry_time,
+		u_regular_time,
+		u_tel,
+		u_phone,
+		u_email,
+		u_qq,
+		u_remarks,
+		create_id,
+		del_state,
+		create_time,
+		lz_state,
+		lz_time,
+		lz_type,
+		lz_remarks,
+		picdata,
+		password
+		)
+		VALUES
+		(
+		#{id},
+		#{u_name},
+		#{u_sex},
+		#{u_birthday},
+		#{u_number},
+		#{u_num_type},
+		#{u_married},
+		#{u_nation},
+		#{u_card},
+		#{u_nationality},
+		#{u_identity},
+		#{u_birthplace},
+		#{u_address},
+		#{u_education},
+		#{u_gradu_time},
+		#{u_work_time},
+		#{deptId},
+		#{u_type},
+		#{u_level},
+		#{u_technical},
+		#{u_job},
+		#{u_entry_time},
+		#{u_regular_time},
+		#{u_tel},
+		#{u_phone},
+		#{u_email},
+		#{u_qq},
+		#{u_remarks},
+		#{create_id},
+		#{del_state},
+		#{create_time},
+		#{lz_state},
+		#{lz_time},
+		#{lz_type},
+		#{lz_remarks},
+		#{picdata},
+		#{password}
+		)
+	</insert>
+	
+	<update id="updateUser" parameterType="com.zcjd.app_server.model.UserInfoPojo">
+		UPDATE 
+			hr_user_info
+		  <set>
+			  <if test="u_name!=null">u_name = #{u_name},</if>
+			  <if test="u_sex!=null">u_sex = #{u_sex},</if>
+			  <if test="u_birthday!=null">u_birthday = #{u_birthday},</if>
+			  <if test="u_number!=null">u_number = #{u_number},</if>
+			  <if test="u_married!=null">u_married = #{u_married},</if>
+			  <if test="u_nation!=null">u_nation = #{u_nation},</if>
+			  <if test="u_card!=null">u_card = #{u_card},</if>
+			  <if test="u_nationality!=null">u_nationality = #{u_nationality},</if>
+			  <if test="u_identity!=null">u_identity = #{u_identity},</if>
+			  <if test="u_birthplace!=null">u_birthplace = #{u_birthplace},</if>
+			  <if test="u_address!=null">u_address = #{u_address},</if>
+			  <if test="u_education!=null">u_education = #{u_education},</if>
+			  <if test="u_gradu_time!=null">u_gradu_time = #{u_gradu_time},</if>
+			  <if test="u_work_time!=null">u_work_time = #{u_work_time},</if>
+			  <if test="deptId!=null">deptId = #{deptId},</if>
+			  <if test="u_type!=null">u_type = #{u_type},</if>
+			  <if test="u_level!=null">u_level =#{u_level},</if>
+			  <if test="u_technical!=null">u_technical = #{u_technical},</if>
+			  <if test="u_job!=null">u_job = #{u_job},</if>
+			  <if test="u_entry_time!=null">u_entry_time = #{u_entry_time},</if>
+			  <if test="u_regular_time!=null">u_regular_time = #{u_regular_time},</if>
+			  <if test="u_tel!=null">u_tel = #{u_tel},</if>
+			  <if test="u_phone!=null">u_phone = #{u_phone},</if>
+			  <if test="u_email!=null">u_email = #{u_email},</if>
+			  <if test="u_qq!=null">u_qq = #{u_qq},</if>
+			  <if test="u_remarks!=null">u_remarks = #{u_remarks},</if>
+			  <if test="create_id!=null">create_id=#{create_id},</if>
+			  <if test="create_time!=null">create_time=#{create_time},</if>
+			  <if test="del_state!=null">del_state=#{del_state},</if>
+			  <if test="lz_state!=null">lz_state=#{lz_state},</if>
+			  <if test="lz_time!=null">lz_time=#{lz_time},</if>
+			  <if test="lz_type!=null">lz_type=#{lz_type},</if>
+			  <if test="lz_remarks!=null">lz_remarks=#{lz_remarks},</if>
+			  <if test="picdata!=null">picdata=#{picdata},</if>
+			  <if test="password!=null">password=#{password},</if>
+		  </set>
+		WHERE
+		id = #{id}
+	</update>
+
+	<!-- 根据id查询用户信息 -->
+	<select id="getUserById" parameterType="java.lang.String" resultType="com.zcjd.app_server.model.UserInfoPojo">
+		select t.*,
+			(select d_name from sys_department where id = t.deptId) as deptName,
+			(select dic_name from sys_dictionary where id=t.u_job) as jobName
+		 from hr_user_info t where t.id=#{id} AND del_state=0
+		<!--  AND u_num_type = 0 -->
+	</select>
+
+	<!-- 根据主键id删除 -->
+	<delete id="deleteUser" parameterType="java.lang.String">
+		DELETE
+		FROM
+		hr_user_info
+		WHERE
+		id= #{id}
+	</delete>
+
+	
+	<!-- 查询所有 -->
+	<select id="findAllUser" resultType="com.zcjd.app_server.model.UserTreePojo" >
+		SELECT 
+			t.id,
+			t.deptId,
+			t.u_name
+		FROM
+			hr_user_info t
+		WHERE
+			t.del_state = 0 AND t.u_num_type = 0
+	</select>
+
+	<!-- 离职变更 -->
+	<update id="resigningUser" parameterType="com.zcjd.app_server.model.UserInfoPojo">
+			update 
+				hr_user_info
+			set	
+				lz_state=1,
+				lz_time=#{lz_time},
+				lz_type=#{lz_type},
+				lz_remarks=#{lz_remarks}
+			where
+				id=#{id}	
+	</update>
+
+	
+	<!-- {账号管理}-分页查询 -->
+	<select id="findUserInfoAccountByPage" parameterType="map" resultType="com.zcjd.app_server.model.UserInfoAccountPojo" >
+		SELECT 
+			hui.id AS userInfoId,
+			hui.u_number AS account,
+			hui.password AS passward,
+			hui.u_name AS userName,
+			(SELECT GROUP_CONCAT(sd.d_name) FROM sys_department sd WHERE FIND_IN_SET(sd.id, hui.deptId) > 0 AND sd.del_state = 0) AS userDept,
+			(SELECT GROUP_CONCAT(sr.role_name) FROM sys_roles sr WHERE FIND_IN_SET(sr.id,
+				(SELECT GROUP_CONCAT(sru.roleId) FROM sys_roles_userinfo sru WHERE sru.userInfoId = hui.id)
+			) > 0 AND sr.del_state = 0) AS userRoles,
+			hui.u_count AS accountType,<!-- 账号状态（0正常，1未正常启用）u_count -->
+			hui.create_time AS createTime
+		FROM
+			hr_user_info hui
+		<where>
+			hui.del_state = 0 AND hui.u_num_type = 0
+			<if test="map.u_number != null and map.u_number != ''">
+				and hui.u_number like '%${map.u_number}%'
+			</if>
+			<if test="map.u_name != null and map.u_name != ''">
+				and hui.u_name like '%${map.u_name}%'
+			</if>
+			<if test="map.deptId != null and map.deptId != ''">
+				and hui.deptId = #{map.deptId}
+			</if>
+			<if test="map.u_count != null and map.u_count != ''">
+				and hui.u_count = #{map.u_count}
+			</if>
+			<if test="map.roleId != null and map.roleId != ''">
+				AND ((SELECT COUNT(id) FROM sys_roles_userinfo ru WHERE ru.userInfoId = hui.id AND ru.roleId = #{map.roleId}) > 0)
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查看所有编号-->
+	<select id="getUserNumberList" resultType="java.lang.String">
+		select u_number from hr_user_info 
+	</select>
+
+	<!-- 
+		账号停用/启用
+		账号状态（0正常，1未正常启用） -->
+	<update id="updateUserInfoAccountState" parameterType="map" >
+		UPDATE 
+			hr_user_info 
+		SET
+			u_count = #{map.u_count}
+		WHERE
+			id = #{map.userInfoId}
+	</update>
+
+</mapper>  
+ 

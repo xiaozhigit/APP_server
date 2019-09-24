@@ -1,0 +1,60 @@
+#端口地址
+server:
+  port: 8080
+  #群头像上传存储地址
+fileUploadPath: D:\\uploadFlePath\\
+  #极光推送
+jiguang_appKey: f1d28b6f51f4c6e50287bad9
+jiguang_masterSecret: 1ef118af365d38d28b7ee7df
+  #数据库配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: 'jdbc:mysql://222.212.87.46:3306/office4.0cscs?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=UTC'
+    username: sa
+    password: a@b@c*123.
+    secondary:
+        max-idle: 10
+        max-wait: 10000
+        min-idle: 5
+        initial-size: 5
+        validation-query: SELECT 1
+        test-on-borrow: false
+        test-while-idle: true
+        time-between-eviction-runs-millis: 18800
+  #mybatis配置
+mybatis:
+  mapper-locations:
+    classpath: com/zcjd/app_server/mapper/*Mapper.xml
+  type-aliases-package: com.zcjd.app_server.mapper
+  #jdbc:mysql:///mg?characterEncoding=utf8&useUnicode=true&useSSL=false&serverTimezone=UTC
+  #jdbc\:mysql\://222.212.87.46\:3306/office4.0cscs?characterEncoding\=utf8&useUnicode\=true&useSSL\=false&serverTimezone\=UTC
+  #jdbc\:mysql\://222.212.87.46\:3306/office4.0cscs?useUnicode\=true&amp;characterEncoding\=UTF-8&amp;characterSetResults\=UTF-8&amp;profileSQL\=true
+  #日志配置
+  # Set root logger level to error
+  #log4j.rootLogger=DEBUG, Console, File
+  ###### Console appender definition #######
+  # All outputs currently set to be a ConsoleAppender.
+  #log4j.appender.Console=org.apache.log4j.ConsoleAppender
+  #log4j.appender.Console.layout=org.apache.log4j.PatternLayout
+  #log4j.appender.Console.layout.ConversionPattern=%d{ABSOLUTE} %-5p [%c{3}] %m%n
+  #springwork config
+  #log4j.logger.org.springframework=DEBUG
+  #log4j.logger.com.opensymphony.xwork2=DEBUG
+  #---------------------
+logging:
+  level:
+    #mybatis显示sql
+    com:
+      zcjd:
+        app_server:
+          mapper: debug
+  #指定目录,与logging.file冲突
+  #当前磁盘的根路径下创建spring文件夹和里面的log文件夹,使用日志spring.log默认文件
+  path: /spring/log
+  #不指定路径,就在当前项目下生产springboot.log日志
+  #可以指定完整的路径:
+  file: springboot.log
+  # 在控制台输出的日志的格式
+  pattern:
+    console: '%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n'
